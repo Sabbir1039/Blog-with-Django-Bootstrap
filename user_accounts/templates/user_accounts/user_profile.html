@@ -1,0 +1,33 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="container p-3 bg-light">
+    <div class="container my-3 p-4">
+        <div class="row justify-content-center">
+            <!-- Profile Picture Column -->
+            <div class="col-lg-2">
+                <img src="{{ user.profile.profile_pic.url }}"
+                     alt="{{ user.username }}'s Profile Picture"
+                     class="img-fluid rounded-circle"
+                     width="150px"
+                     height="150px"
+                  >
+            </div>
+            <!-- User Information Column -->
+            <div class="col-lg-4">
+                <h3 class="border-bottom">{{ user.username }}'s Profile</h3>
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Id:</strong> {{ user.id }}</p>
+                <p><a class="mb-1" href="#">Show author's all posts</a></p>
+        
+                <div class="buttons">
+                    <a class="btn btn-md btn-info mt-1 mt-sm-0" href="{% url 'user_profile_update' user.id %}">Update</a>
+                    <a class="btn btn-md btn-warning mt-1 mt-sm-0" href="{% url 'password_reset' %}">Reset Password</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
