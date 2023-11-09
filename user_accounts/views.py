@@ -10,7 +10,7 @@ from django.views.generic import CreateView, DetailView, UpdateView
 
 class UserRegistrationView(CreateView):
     form_class = UserRegisterForm
-    template_name = 'user_accounts_app/register.html'
+    template_name = 'user_accounts/register.html'
     context_object_name = 'form'
     success_url = '/login/'
     
@@ -37,7 +37,7 @@ class UserRegistrationView(CreateView):
 
 class UserProfileView(DetailView):
     model = Profile
-    template_name = 'user_accounts_app/user_profile.html'
+    template_name = 'user_accounts/user_profile.html'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -47,7 +47,7 @@ class UserProfileView(DetailView):
 class UserProfileUpdateView(UpdateView):
     model = User
     form_class = UserUpdateForm
-    template_name = 'user_accounts_app/user_profile_update.html'
+    template_name = 'user_accounts/user_profile_update.html'
     
     def get_success_url(self):
         return reverse('profile-detail', kwargs={'pk': self.object.pk})
