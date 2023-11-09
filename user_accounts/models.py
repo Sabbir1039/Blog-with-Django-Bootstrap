@@ -11,4 +11,15 @@ class Profile(models.Model):
         return f'{self.user}'
     
     def get_absolute_url(self):
+        """
+        Define the absolute URL for a Profile object.
+
+        This method is used by Django's generic views and other parts of the framework
+        to determine the URL for a specific Profile object. By using the reverse()
+        function, it generates the URL based on the 'profiles:profile-detail' URL pattern
+        and includes the primary key (pk) of the object.
+
+        Returns:
+            str: The absolute URL for the Profile object.
+        """
         return reverse('profiles:profile-detail', args=[str(self.pk)])
