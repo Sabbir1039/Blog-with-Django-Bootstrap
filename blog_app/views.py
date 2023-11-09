@@ -7,7 +7,7 @@ from django.views.generic.list import ListView
 
 class HomePageView(ListView):
     model = Post
-    template_name = 'blog/home.html'
+    template_name = 'blog_app/home.html'
     # context_object_name = 'posts'
     
     
