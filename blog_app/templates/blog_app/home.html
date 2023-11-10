@@ -15,36 +15,43 @@
         <!-- Recent Posts -->
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header text-dark bg-light" style="font-size: 18px;">
-                    Featured Posts
+                <div class="card-header text-dark bg-white">
+                    <h4 class="mb-0">Featured Posts</h4>
                 </div>
-                <div class="list-group list-group-flush">
-                    {% for post in posts %}
-                    <div class="list-group-item">
-                        <!-- <img src="{{ post.cover_image.url }}" class="card-img-top" alt="Post Cover Image"> -->
-                        <h5 class="card-title">
-                            <a href="#">{{ post.title }}</a>
-                        </h5>
-                        <small class="text-muted">Published on {{ post.created_at }} by {{ post.author }}</small>
-                        <p class="card-text">{{ post.text|truncatewords:150 }}</p>
-                        <a href="#" class="btn btn-primary">Continue Reading</a>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for post in posts %}
+                        <div class="list-group-item">
+                            <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
+                            <h5 class="card-title mt-2">
+                                <a href="#">{{ post.title }}</a>
+                            </h5>
+                            <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
+                            <hr>
+                            <p class="card-text">{{ post.content|truncatewords:100 }}</p>
+                            <a href="#" class="btn btn-outline-primary">Continue Reading</a>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
+        
 
         <!-- Top Posts -->
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header text-dark bg-light" style="font-size: 18px;">
-                    Recent Posts
+                <div class="card-header text-dark bg-white" style="font-size: 18px;">
+                    <h5 class="mb-0">Recent Posts</h5>
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for post in posts %}
                     <li class="list-group-item">
+                        <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
                         <a href="">{{ post.title }}</a>
-                        <small class="text-muted">20 likes</small>
+                        <small class="ml-2 text-muted">20 likes</small>
+                        <br>
+                        <small>{{ post.created_at|date:"F j, Y" }} By, {{ post.author }}</small>
                     </li>
                     {% endfor %}
                 </ul>

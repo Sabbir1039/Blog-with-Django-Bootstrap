@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from PIL import Image
 
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -16,12 +19,27 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     categories = models.ManyToManyField(Category, related_name='posts')
     is_published = models.BooleanField(default=True)
+    cover_image = models.ImageField(default='cover.jpg', upload_to='cover_pics')
     
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
         return self.title
+
+@receiver(pre_save, sender=Post)
+def resize_cover_image(sender, instance, **kwargs):
+    if instance.cover_image:
+        img = Image.open(instance.cover_image.path)
+
+        # Define the desired size for your image
+        max_size = (800, 600)
+
+        # Resize the image while preserving its aspect ratio
+        img.thumbnail(max_size)
+
+        # Save the resized image back to the same path
+        img.save(instance.cover_image.path)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
@@ -33,7 +51,7 @@ class Comment(models.Model):
         ordering = ['created_at']
 
     def __str__(self):
-        return f"Comment by {self.author} on {self.post}"
+        return f"Comment by {str(self.author)} on {str(self.post)}"
 
 class Like(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
