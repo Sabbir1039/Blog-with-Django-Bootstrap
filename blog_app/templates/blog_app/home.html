@@ -3,7 +3,7 @@
 {% block content %}
 <div class="mt-2">
     <!-- Greeting Section -->
-    <div id="hero" class="jumbotron py-3 text-center text-dark bg-light mt-1">
+    <div id="hero" class="jumbotron py-3 text-center text-dark bg-white mt-1 border">
         <h2 class="">Welcome to Blog!</h2>
         <p class="lead">We write about Science & Technology</p>
         <hr class="my-1 bg-white">
@@ -53,6 +53,7 @@
                         <br>
                         <small>{{ post.created_at|date:"F j, Y" }} By, {{ post.author }}</small>
                     </li>
+                    <hr>
                     {% endfor %}
                 </ul>
             </div>
