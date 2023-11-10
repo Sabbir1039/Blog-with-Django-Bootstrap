@@ -3,9 +3,9 @@
 {% block content %}
 <div class="mt-2">
     <!-- Greeting Section -->
-    <div class="jumbotron py-3 text-center text-light bg-dark">
-        <h1 class="display-4">Welcome to Sabbir's Blog!</h1>
-        <p class="lead">Your source for the latest posts and top articles.</p>
+    <div id="hero" class="jumbotron py-3 text-center text-dark bg-light mt-1">
+        <h2 class="">Welcome to Blog!</h2>
+        <p class="lead">We write about Science & Technology</p>
         <hr class="my-1 bg-white">
         <p>Stay tuned for more exciting content and feel free to explore our recent and top posts below.</p>
     </div>
@@ -13,27 +13,32 @@
     <!-- Recent & Top Posts Section -->
     <div class="row">
         <!-- Recent Posts -->
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header text-light bg-dark" style="font-size: 18px;">
-                    Recent Posts
+                <div class="card-header text-dark bg-light" style="font-size: 18px;">
+                    Featured Posts
                 </div>
-                <ul class="list-group list-group-flush">
-                    {% for post in recent_post %}
-                    <li class="list-group-item">
-                        <a href="">{{ post.title }}</a>
-                        <small class="text-muted">Published on {{ post.created_at }}</small>
-                    </li>
+                <div class="list-group list-group-flush">
+                    {% for post in posts %}
+                    <div class="list-group-item">
+                        <!-- <img src="{{ post.cover_image.url }}" class="card-img-top" alt="Post Cover Image"> -->
+                        <h5 class="card-title">
+                            <a href="#">{{ post.title }}</a>
+                        </h5>
+                        <small class="text-muted">Published on {{ post.created_at }} by {{ post.author }}</small>
+                        <p class="card-text">{{ post.text|truncatewords:150 }}</p>
+                        <a href="#" class="btn btn-primary">Continue Reading</a>
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
         </div>
 
         <!-- Top Posts -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header text-light bg-dark" style="font-size: 18px;">
-                    Top Posts
+                <div class="card-header text-dark bg-light" style="font-size: 18px;">
+                    Recent Posts
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for post in posts %}

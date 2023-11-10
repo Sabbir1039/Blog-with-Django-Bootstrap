@@ -38,3 +38,5 @@ media/
 # Ignore development/test databases
 test.db
 dev.db
+
+pass.txt

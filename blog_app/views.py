@@ -14,6 +14,6 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['title'] = 'Home'
-        context['recent_post'] = Post.objects.all().order_by('created_at')[:5]
+        context['posts'] = Post.objects.all().order_by('created_at')[:5]
         # context['top_post'] = Post.objects.all().count()
         return context

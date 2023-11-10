@@ -130,7 +130,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Directory where collectstatic will gather static files for deployment
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'production_static_files/')
 
 # Directories where Django looks for static files in addition to the static directory of each app
 # STATICFILES_DIRS = [
@@ -140,6 +140,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 # Media files (user-uploaded content)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+LOGIN_REDIRECT_URL = '/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
