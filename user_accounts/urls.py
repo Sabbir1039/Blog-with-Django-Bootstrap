@@ -5,15 +5,16 @@ from django.conf.urls.static import static
 
 from user_accounts import views as user_accounts_views
 from django.contrib.auth import views as auth_views
-from .views import UserProfileView, UserProfileUpdateView
+from .views import UserProfileView, UserProfileUpdateView, MyLoginView
 
 urlpatterns = [
     path('profile/<int:pk>/', UserProfileView.as_view(), name = 'profile-detail'),
     path('update_profile/<int:pk>/', UserProfileUpdateView.as_view(), name = 'user_profile_update'),
     
     path('register/', user_accounts_views.UserRegistrationView.as_view(), name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name="user_accounts/login.html"), name = 'login'),
+    path('login/', MyLoginView.as_view(), name = 'login'),
     path('logout/', auth_views.LogoutView.as_view(template_name="user_accounts/logout.html"), name = 'logout'),
+    
      # urls for password reset
     path('password-reset/', 
          auth_views.PasswordResetView.as_view(template_name='user_accounts/password_reset.html'),

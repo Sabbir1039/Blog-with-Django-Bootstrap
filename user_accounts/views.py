@@ -1,11 +1,12 @@
 from typing import Any
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 from django.views.generic import CreateView, DetailView, UpdateView
+from django.contrib.auth.views import LoginView, LogoutView
 
 
 class UserRegistrationView(CreateView):
@@ -68,3 +69,20 @@ class UserProfileUpdateView(UpdateView):
             return self.form_valid(user_form)
         else:
             return self.form_invalid(user_form, profile_form)
+        
+        
+class MyLoginView(LoginView):
+    redirect_authenticated_user = True
+    template_name = 'user_accounts/login.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('home') 
+    
+    def form_invalid(self, form):
+        messages.error(self.request,'Invalid username or password')
+        return self.render_to_response(self.get_context_data(form=form))
+    
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect('/')
+        return super().dispatch(*args, **kwargs)
