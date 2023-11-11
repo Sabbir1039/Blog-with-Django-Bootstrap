@@ -1,38 +1,41 @@
 {% load static %}
 <!-- Navbar -->
-<nav id="navbar" class="navbar navbar-expand-md navbar-light bg-white justify-content-between align-items-center">
-    <div class="">
+<nav id="navbar" class="navbar navbar-expand-md navbar-light bg-white justify-content-between">
+    <div class="align-self-start">
         <a id="brand" class="navbar-brand mx-2 btn btn-lg btn-light" href="#"><i class="bi bi-bootstrap mx-1"></i>Blog</a>
     </div>
-    <div class="mb-0">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <div class="">
+        <button class="navbar-toggler mr-2" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item mr-2">
+                <li class="nav-item mr-2 mt-1 md-mt-0">
                     <a class="nav-link text-dark btn btn-light" href="{% url 'home' %}">Home</span></a>
                 </li>
-                <li class="nav-item mr-2">
+                <li class="nav-item mr-2 mt-1 md-mt-0">
                     <a class="nav-link text-dark btn btn-light" href="#">Posts</a>
                 </li>
-                <li class="nav-item mr-2">
+                <li class="nav-item mr-2 mt-1 md-mt-0">
                     <a class="nav-link text-dark btn btn-light" href="#">Authors</a>
                 </li>
-                <li class="nav-item mr-2">
+                <li class="nav-item mr-2 mt-1 md-mt-0">
                     <a class="nav-link text-dark btn btn-light" href="#">About</a>
                 </li>
 
                 {% if user.is_authenticated %}
-                    <li class="nav-item mr-2  mt-2 mt-md-0">
+                    <li class="nav-item mr-2  mt-2 mt-md-1">
                         <a class="nav-link btn btn-sm btn-outline-info" href="{% url 'profile-detail' user.id %}">Profile</a>
                     </li>
-                    <li class="nav-item mr-2 mt-2 mt-md-0">
+                    <li class="nav-item mr-2 mt-2 mt-md-1">
                         <a class="nav-link btn btn-sm btn-outline-warning" href="{% url 'logout' %}">Logout</a>
                     </li>
                 {% else %}
-                    <li class="nav-item">
+                    <li class="nav-item mr-2 mt-1">
                         <a class="nav-link btn btn-light text-dark" href="{% url 'login' %}">Sign In</a>
+                    </li>
+                    <li class="nav-item mr-2 mt-1">
+                        <a class="nav-link btn btn-light text-dark" href="{% url 'register' %}">Sign Up</a>
                     </li>
                 {% endif %}
                 
