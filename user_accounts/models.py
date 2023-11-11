@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -23,3 +24,14 @@ class Profile(models.Model):
             str: The absolute URL for the Profile object.
         """
         return reverse('profiles:profile-detail', args=[str(self.pk)])
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.profile_pic.path)
+
+        # Set a maximum size for the profile picture
+        max_size = (300, 300)
+        if img.height > max_size[1] or img.width > max_size[0]:
+            img.thumbnail(max_size)
+            img.save(self.profile_pic.path)
