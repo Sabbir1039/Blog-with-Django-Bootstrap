@@ -22,7 +22,7 @@ class UserRegistrationView(CreateView):
     
     def form_valid(self, form):
         response = super().form_valid(form)
-        profile = Profile(user=self.object)
+        profile = Profile(user=self.object) 
         profile.save()
         messages.success(self.request, 'Your account was successfully created! Please log in.')
         return response
@@ -30,6 +30,8 @@ class UserRegistrationView(CreateView):
     # Authentication Checks:
     # Depending on app's logic, might want to prevent already
     # authenticated users from accessing the registration page.
+    # dispatch: When a request is made to a Django view, the dispatch() method 
+    # is called to handle the incoming request.
     def dispatch(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             return redirect('/')

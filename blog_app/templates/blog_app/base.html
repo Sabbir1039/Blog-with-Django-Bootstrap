@@ -15,8 +15,8 @@
         <title>Django Blog</title>
     {% endif %}
 </head>
-<body>
-    <div class="container bg-light">
+<body style="padding-top: 56px;">
+    <div class="container bg-light p-0">
         <!-- Messages -->
         {% if messages %}
             {% for msg in messages %}
@@ -30,7 +30,7 @@
         {% include "blog_app/navbar.html" %}
 
         <!-- Main content will go here -->
-        <div class="content">
+        <div class="content mt-4">
             {% block content %}
             <!-- Default content, if any -->
             {% endblock %}
