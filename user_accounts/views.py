@@ -45,17 +45,26 @@ class UserProfileView(DetailView):
         context['title'] = 'Profile'
         return context
     
+    def get_object(self, queryset=None):
+        # Ensure that the user can only view their own profile
+        return self.request.user.profile
+    
 class UserProfileUpdateView(UpdateView):
-    model = User
+    model = Profile
     form_class = UserUpdateForm
     template_name = 'user_accounts/user_profile_update.html'
     
     def get_success_url(self):
         return reverse('profile-detail', kwargs={'pk': self.object.pk})
     
+    def get_object(self, queryset=None):
+        # Ensure that the user can only view their own profile
+        return self.request.user
+    
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['profile_form'] = ProfileUpdateForm(instance = self.object.profile)
+        profile = self.request.user.profile #get the user profile
+        context['profile_form'] = ProfileUpdateForm(instance = profile)
         return context
     
     def post(self, request, *args, **kwargs):
@@ -74,15 +83,16 @@ class UserProfileUpdateView(UpdateView):
 class MyLoginView(LoginView):
     redirect_authenticated_user = True
     template_name = 'user_accounts/login.html'
+    success_url = "/" # sets static success url
     
     def get_success_url(self):
-        return reverse_lazy('home') 
+        return reverse_lazy('home') # set dynamic success url. Higher precedence than success_url
     
     def form_invalid(self, form):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
     
-    def dispatch(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect('/')
-        return super().dispatch(*args, **kwargs)
+    # def dispatch(self, *args, **kwargs):
+    #     if self.request.user.is_authenticated:
+    #         return redirect('/')
+    #     return super().dispatch(*args, **kwargs)
