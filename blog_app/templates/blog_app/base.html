@@ -17,20 +17,21 @@
 </head>
 <body style="padding-top: 56px;">
     <div class="container bg-light p-0">
-        <!-- Messages -->
-        {% if messages %}
-            {% for msg in messages %}
-                <div class="alert alert-{{ msg.tags }} fade show" role="alert">
-                    {{ msg }}
-                </div>
-            {% endfor %}
-        {% endif %}
         
         <!-- Include the navigation bar -->
         {% include "blog_app/navbar.html" %}
 
         <!-- Main content will go here -->
         <div class="content mt-4">
+            <!-- Messages -->
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="alert alert-{{ msg.tags }} fade show" role="alert">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
             {% block content %}
             <!-- Default content, if any -->
             {% endblock %}

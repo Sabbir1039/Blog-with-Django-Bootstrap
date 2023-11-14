@@ -1,0 +1,15 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h3 class="card-title">Do you want to delete the post permanently?</h3>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-md btn-danger mt-1 text-light">Confirm</button>
+            <a href="{% url 'post-detail' post.id %}" class="btn btn-md btn-info mt-1">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

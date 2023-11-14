@@ -1,0 +1,21 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+<div class="card mb-4">
+    <img src="{{ post.cover_image.url }}" class="card-img-top img-fluid rounded" alt="Post Cover Image">
+    <div class="card-body">
+        <h2 class="card-title">{{ post.title }}</h2>
+        <p class="card-text">
+            <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
+        </p>
+        <hr>
+        <p class="card-text">{{ post.content | safe }}</p>
+        <div class="mt-4">
+            {% if request.user == post.author %}
+                <a href="{% url 'post-update' post.id %}" class="btn btn-primary mt-1">Update Post</a>
+                <a href="{% url 'post-delete' post.id %}" class="btn btn-danger mt-1">Delete Post</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

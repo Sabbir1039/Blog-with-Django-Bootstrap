@@ -24,12 +24,12 @@
                         <div class="list-group-item">
                             <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
                             <h5 class="card-title mt-2">
-                                <a href="#">{{ post.title }}</a>
+                                <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
                             </h5>
                             <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
                             <hr>
                             <p class="card-text">{{ post.content|truncatewords:100 }}</p>
-                            <a href="#" class="btn btn-outline-primary">Continue Reading</a>
+                            <a href="{% url 'post-detail' post.id %}" class="btn btn-outline-primary">Continue Reading</a>
                         </div>
                         {% endfor %}
                     </div>
@@ -48,7 +48,7 @@
                     {% for post in posts %}
                     <li class="list-group-item">
                         <!-- <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image"> -->
-                        <a href="">{{ post.title }}</a>
+                        <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
                         <small class="ml-2 text-muted">20 likes</small>
                         <br>
                         <small>{{ post.created_at|date:"F j, Y" }} By, {{ post.author }}</small>
