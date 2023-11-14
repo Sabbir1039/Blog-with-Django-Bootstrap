@@ -12,7 +12,7 @@
 
     <!-- Recent & Top Posts Section -->
     <div class="row">
-        <!-- Recent Posts -->
+        <!-- Featured Posts -->
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header text-dark bg-white">
@@ -38,7 +38,7 @@
         </div>
         
 
-        <!-- Top Posts -->
+        <!-- Recent Posts & Categories-->
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header text-dark bg-white" style="font-size: 18px;">
@@ -47,17 +47,44 @@
                 <ul class="list-group list-group-flush">
                     {% for post in posts %}
                     <li class="list-group-item">
-                        <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
+                        <!-- <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image"> -->
                         <a href="">{{ post.title }}</a>
                         <small class="ml-2 text-muted">20 likes</small>
                         <br>
                         <small>{{ post.created_at|date:"F j, Y" }} By, {{ post.author }}</small>
                     </li>
-                    <hr>
                     {% endfor %}
                 </ul>
             </div>
+            <!-- Categories list -->
+            <div class="bg-white border p-3 rounded mb-2">
+                <div class="h5 mb-3">Categories</div>
+                <ul class="list-unstyled ml-2">
+                    <li class="mb-2">
+                        <a href="#" class="text-decoration-none text-dark">
+                            <i class="bi bi-gear-fill mr-2"></i>Sci-Fi
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-decoration-none text-dark">
+                            <i class="bi bi-laptop mr-2"></i>Tech
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-decoration-none text-dark">
+                            <i class="bi bi-code mr-2"></i>Coding
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="text-decoration-none text-dark">
+                            <i class="bi bi-people-fill mr-2"></i>Culture
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
         </div>
+
     </div>
 </div>
 {% endblock %}
