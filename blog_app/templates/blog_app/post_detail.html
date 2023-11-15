@@ -1,7 +1,7 @@
 {% extends 'blog_app/base.html' %}
 
 {% block content %}
-<div class="card mb-4">
+<div id="post_detail" class="mx-auto card mb-4">
     <img src="{{ post.cover_image.url }}" class="card-img-top img-fluid rounded" alt="Post Cover Image">
     <div class="card-body">
         <h2 class="card-title">{{ post.title }}</h2>
