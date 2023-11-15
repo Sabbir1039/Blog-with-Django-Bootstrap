@@ -25,6 +25,7 @@
                             <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
                             <h5 class="card-title mt-2">
                                 <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
+                                <small class="ml-2 text-muted">{{ post.likes.count }} Likes</small>
                             </h5>
                             <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
                             <hr>
@@ -49,7 +50,7 @@
                     <li class="list-group-item">
                         <!-- <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image"> -->
                         <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
-                        <small class="ml-2 text-muted">20 likes</small>
+                        <small class="ml-2 text-muted">{{ post.likes.count }}</small>
                         <br>
                         <small>{{ post.created_at|date:"F j, Y" }} By, {{ post.author }}</small>
                     </li>
