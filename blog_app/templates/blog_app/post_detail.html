@@ -7,9 +7,57 @@
         <h2 class="card-title">{{ post.title }}</h2>
         <p class="card-text">
             <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
+            <i class="ml-2 bi-hand-thumbs-up-fill"></i>
+            <i class="mb-0">Total Likes: {{ post.likes.count }}</i>
         </p>
         <hr>
         <p class="card-text">{{ post.content | safe }}</p>
+        <hr>
+        
+        <!-- Likes Section -->
+        <div class="d-flex align-items-center ml-3">
+            <form method="post" action="{% url 'post-detail' pk=post.pk %}">
+                {% csrf_token %}
+                <button type="submit" name="like_button" class="btn btn-md btn-link text-dark">
+                    <i class="bi-hand-thumbs-up-fill"></i>
+                    Like
+                </button>
+                <small>Total likes: {{ post.likes.count }}</small>
+            </form>
+        </div>
+        
+        <!-- Comments Section -->
+        <div class="border rounded px-3 py-2 mt-2">
+            <h4 class="border-bottom">Comments:</h4>
+            {% if post.comments.exists %}
+            <ul class="list-unstyled">              
+                {% for comment in post.comments.all %}
+                    <li class="mb-2">
+                        <div class="d-flex align-items-center">
+                            <i class="bi-chat-fill text-primary mr-2"></i>
+                            <div>
+                                <p class="mb-0">{{ comment.content }}</p>
+                                <small class="text-muted">by {{ comment.author }} on {{ comment.created_at|date:"F j, Y" }}</small> 
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <p>No Comments!</p>
+            {% endif %}
+            <!-- Form for adding comments -->
+            <form method="post" action="{% url 'post-detail' pk=post.pk %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="comment_content">Add a Comment:</label>
+                    <textarea class="form-control" id="comment_content" name="comment_content" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+        </div>
+        
+        
         <div class="mt-4">
             {% if request.user == post.author %}
                 <a href="{% url 'post-update' post.id %}" class="btn btn-primary mt-1">Update Post</a>
