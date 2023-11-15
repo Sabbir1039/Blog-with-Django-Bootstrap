@@ -20,7 +20,7 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        {% for post in posts %}
+                        {% for post in featured_posts %}
                         <div class="list-group-item">
                             <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
                             <h5 class="card-title mt-2">
@@ -46,11 +46,11 @@
                     <h5 class="mb-0">Recent Posts</h5>
                 </div>
                 <ul class="list-group list-group-flush">
-                    {% for post in posts %}
+                    {% for post in recent_posts %}
                     <li class="list-group-item">
                         <!-- <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image"> -->
                         <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
-                        <small class="ml-2 text-muted">{{ post.likes.count }}</small>
+                        <small class="ml-2 text-muted">{{ post.likes.count }} Likes</small>
                         <br>
                         <small>{{ post.created_at|date:"F j, Y" }} By, {{ post.author }}</small>
                     </li>
@@ -61,26 +61,13 @@
             <div class="bg-white border p-3 rounded mb-2">
                 <div class="h5 mb-3">Categories</div>
                 <ul class="list-unstyled ml-2">
+                    {% for item in categories %}
                     <li class="mb-2">
                         <a href="#" class="text-decoration-none text-dark">
-                            <i class="bi bi-gear-fill mr-2"></i>Sci-Fi
+                            <i class="bi bi-bookmark-star mr-2"></i>{{ item.name }}
                         </a>
                     </li>
-                    <li class="mb-2">
-                        <a href="#" class="text-decoration-none text-dark">
-                            <i class="bi bi-laptop mr-2"></i>Tech
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="#" class="text-decoration-none text-dark">
-                            <i class="bi bi-code mr-2"></i>Coding
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="#" class="text-decoration-none text-dark">
-                            <i class="bi bi-people-fill mr-2"></i>Culture
-                        </a>
-                    </li>
+                    {% endfor %}
                 </ul>
             </div>
             

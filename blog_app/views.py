@@ -1,10 +1,11 @@
 from typing import Any
 from django.db.models.query import QuerySet
+from django.db import models
 from django.forms.models import BaseModelForm
 from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, Like, Category
 from django.views.generic import (
     ListView,
     CreateView,
@@ -18,13 +19,14 @@ class HomePageView(ListView):
     model = Post
     template_name = 'blog_app/home.html'
     context_object_name = 'posts'
-    
-    
+     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['title'] = 'Home'
-        # context['posts'] = Post.objects.all().order_by('created_at')[:5]
-        # context['top_post'] = Post.objects.all().count()
+        context['recent_posts'] = Post.objects.all().order_by('-created_at')[:5]
+        most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:5]
+        context['featured_posts'] = most_liked_posts
+        context['categories'] = Category.objects.all()
         return context
     
 
