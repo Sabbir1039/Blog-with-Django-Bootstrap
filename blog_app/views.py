@@ -50,6 +50,12 @@ class PostDetailView(DetailView):
     model = Post
     context_object_name = 'post'
     
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        post = context['post']
+        context['is_liked'] = post.likes.filter(user=self.request.user).exists()
+        return context
+    
     def post(self, request, *args, **kwargs):
         # Handling comment submission
         if 'comment_content' in self.request.POST:

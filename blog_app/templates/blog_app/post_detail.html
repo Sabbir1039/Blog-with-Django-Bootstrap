@@ -15,14 +15,18 @@
         <hr>
         
         <!-- Likes Section -->
-        <div class="d-flex align-items-center ml-3">
+        <div class="d-flex align-items-center">
             <form method="post" action="{% url 'post-detail' pk=post.pk %}">
                 {% csrf_token %}
-                <button type="submit" name="like_button" class="btn btn-md btn-link text-dark">
+                <button type="submit" name="like_button" class="mt-1 btn btn-md btn-link btn-outline-success text-dark">
                     <i class="bi-hand-thumbs-up-fill"></i>
-                    Like
+                    {% if is_liked %}
+                        Liked
+                    {% else %}
+                        Like
+                    {% endif %}
                 </button>
-                <small>Total likes: {{ post.likes.count }}</small>
+                <i class="mt-1 btn btn-outline-dark bg-white text-dark">Total likes: {{ post.likes.count }}</i>
             </form>
         </div>
         
