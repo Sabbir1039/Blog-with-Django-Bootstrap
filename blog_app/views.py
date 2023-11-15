@@ -5,7 +5,8 @@ from django.forms.models import BaseModelForm
 from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .models import Post, Like, Category
+from django.shortcuts import redirect
+from .models import Post, Like, Category, Comment
 from django.views.generic import (
     ListView,
     CreateView,
@@ -48,6 +49,28 @@ class PostCreateView(CreateView):
 class PostDetailView(DetailView):
     model = Post
     context_object_name = 'post'
+    
+    def post(self, request, *args, **kwargs):
+        # Handling comment submission
+        if 'comment_content' in self.request.POST:
+            post = self.get_object()
+            comment_content = self.request.POST['comment_content']
+            Comment.objects.create(post=post, author=request.user, content=comment_content)
+            messages.success(request, 'Comment added successfully.')
+            return redirect('post-detail', pk=post.pk)
+
+        # Handling like button click
+        if 'like_button' in self.request.POST:
+            post = self.get_object()
+            # Check if the user already liked the post
+            if not Like.objects.filter(post=post, user=request.user).exists():
+                Like.objects.create(post=post, user=request.user)
+                messages.success(request, 'Liked the post!')
+            else:
+                messages.warning(request, 'You have already liked this post.')
+            return redirect('post-detail', pk=post.pk)
+
+        return super().post(request, *args, **kwargs)
     
     
 class PostUpdateView(UpdateView):
