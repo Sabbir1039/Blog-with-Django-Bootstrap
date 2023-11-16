@@ -81,13 +81,13 @@ class UserProfileUpdateView(UpdateView):
             messages.success(request, 'Profile Updated Successfully!')
             return self.form_valid(user_form)
         else:
-            return self.form_invalid(user_form, profile_form)
+            messages.error(request, 'Profile update failed. Please check the form.')
+            return self.render_to_response(self.get_context_data(user_form=user_form, profile_form=profile_form))
         
         
 class MyLoginView(LoginView):
     redirect_authenticated_user = True
     template_name = 'user_accounts/login.html'
-    success_url = "/" # sets static success url
     
     def get_success_url(self):
         return reverse_lazy('home') # set dynamic success url. Higher precedence than success_url
@@ -95,8 +95,3 @@ class MyLoginView(LoginView):
     def form_invalid(self, form):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
-    
-    # def dispatch(self, *args, **kwargs):
-    #     if self.request.user.is_authenticated:
-    #         return redirect('/')
-    #     return super().dispatch(*args, **kwargs)
