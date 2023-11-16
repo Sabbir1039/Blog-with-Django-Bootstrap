@@ -44,7 +44,8 @@ class UserProfileView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Profile'
+        profile = self.get_object()
+        context['title'] = f'Profile-{profile.user}'
         return context
     
     def get_object(self, queryset=None):
@@ -67,6 +68,7 @@ class UserProfileUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         profile = self.request.user.profile #get the user profile
         context['profile_form'] = ProfileUpdateForm(instance = profile)
+        context['title'] = f"Update-{self.request.user}'s Profile"
         return context
     
     def post(self, request, *args, **kwargs):
