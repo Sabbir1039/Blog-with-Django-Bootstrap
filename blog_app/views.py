@@ -23,7 +23,7 @@ class HomePageView(ListView):
      
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Home'
+        context['title'] = 'Blog Home'
         context['recent_posts'] = Post.objects.all().order_by('-created_at')[:5]
         most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:5]
         context['featured_posts'] = most_liked_posts
@@ -55,7 +55,7 @@ class PostDetailView(DetailView):
         post = context['post']
         # Check if the user is authenticated before checking likes
         context['is_liked'] = post.likes.filter(user=self.request.user).exists() if self.request.user.is_authenticated else False
-        context['title'] = 'Post Detail'
+        context['title'] = f'Post-{post.title}'
         return context
     
     def post(self, request, *args, **kwargs):
@@ -95,8 +95,9 @@ class PostUpdateView(UpdateView):
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['header'] = 'Update Post'
-        context['title'] = 'Update'
+        post = self.get_object()
+        context['header'] = f'Update Post: {post.title}'
+        context['title'] = f'Update-{post.title}'
         return context
     
     def get_success_url(self):
