@@ -1,0 +1,56 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+    <div id="post-list" class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h2 class="my-1">All Posts</h2>
+                
+                <form class="my-2" method="GET" action="{% url 'post-list' %}">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label for="category">Filter by Category:</label>
+                            <select name="category" class="form-control">
+                                <option value="" selected>All Categories</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="search">Search:</label>
+                            <input type="text" name="search" class="form-control" placeholder="Search...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-md btn-primary">Apply Filters</button>
+                </form>
+
+                {% for post in posts %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <img src="{{ post.cover_image.url }}" class="img-fluid rounded" alt="Post Cover Image">
+                            <h3 class="card-title">{{ post.title }}</h3>
+                            <p>
+                                <small class="text-muted">
+                                    Published on {{ post.created_at|date:"F j, Y"}} by, {{ post.author }}
+                                    <i class="ml-2 ba bi-hand-thumbs-up-fill"></i>Total likes: {{ post.likes.count }}
+                                </small>
+                            </p>
+                            <p class="card-text">{{ post.content|truncatewords:70 }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Category: {% for category in post.categories.all %} {{ category }} {% endfor %}
+                                </small>
+                            </p>
+                            <a class="btn btn-outline-primary" href="{% url 'post-detail' post.id %}">Continue Reading</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-md-4">
+                <!-- Add any additional content or widgets here -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

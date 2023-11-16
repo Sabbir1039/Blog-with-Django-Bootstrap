@@ -8,7 +8,7 @@
         <p class="lead">We write about everything</p>
         <hr class="my-1 bg-white">
         <p>Stay tuned for more exciting content and feel free to explore our top and recent posts below.</p>
-        <a class="btn btn-md btn-outline-info mt-1" href="#">View all posts</a>
+        <a class="btn btn-md btn-outline-info mt-1" href="{% url 'post-list' %}">View all posts</a>
         <a class="btn btn-md btn-outline-info mt-1"  href="{% url 'post-new' %}">Create new post</a>
     </div>
 
@@ -29,9 +29,16 @@
                                 <a href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
                                 <small class="ml-2 text-muted">{{ post.likes.count }} Likes</small>
                             </h5>
+                            <p class="card-text my-1">
+                                <small class="text-muted"> Category: 
+                                    {% for category in post.categories.all %}
+                                        {{ category }}
+                                    {% endfor %}
+                                </small>
+                            </p>
                             <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
                             <hr>
-                            <p class="card-text">{{ post.content|truncatewords:100 }}</p>
+                            <p class="card-text">{{ post.content|truncatewords:50 }}</p>
                             <a href="{% url 'post-detail' post.id %}" class="btn btn-outline-primary">Continue Reading</a>
                         </div>
                         {% endfor %}

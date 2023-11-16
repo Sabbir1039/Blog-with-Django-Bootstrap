@@ -31,6 +31,31 @@ class HomePageView(ListView):
         context['categories'] = Category.objects.all()
         return context
     
+class PostListView(ListView):
+    model = Post
+    context_object_name = "posts"
+    paginate_by = 5
+    
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['title'] = "All Posts"
+        context['categories'] = Category.objects.all()
+        return context
+    
+    def get_queryset(self) -> QuerySet[Any]:
+        queryset = super().get_queryset()
+        category_id = self.request.GET.get('category')
+        search_query = self.request.GET.get('search')
+        
+        # Apply category filter
+        if category_id:
+            queryset = queryset.filter(categories__id = category_id)
+            
+        # Apply search filter
+        if search_query:
+            queryset = queryset.filter(title__icontains=search_query)
+        return queryset
+            
 
 class PostCreateView(LoginRequiredMixin,CreateView):
     model = Post

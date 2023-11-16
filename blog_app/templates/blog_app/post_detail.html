@@ -5,11 +5,19 @@
     <img src="{{ post.cover_image.url }}" class="card-img-top img-fluid rounded" alt="Post Cover Image">
     <div class="card-body">
         <h2 class="card-title">{{ post.title }}</h2>
+        <p class="card-text my-1">
+            <small class="text-muted"> Category: 
+                {% for category in post.categories.all %}
+                    {{ category }}
+                {% endfor %}
+            </small>
+        </p>
         <p class="card-text">
             <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }} by {{ post.author }}</small>
             <i class="ml-2 bi-hand-thumbs-up-fill"></i>
             <i class="mb-0">Total Likes: {{ post.likes.count }}</i>
         </p>
+        
         <hr>
         <p class="card-text">{{ post.content | safe }}</p>
         <hr>
@@ -19,11 +27,10 @@
             <form method="post" action="{% url 'post-detail' pk=post.pk %}">
                 {% csrf_token %}
                 <button type="submit" name="like_button" class="mt-1 btn btn-md btn-link btn-outline-success text-dark">
-                    <i class="bi-hand-thumbs-up-fill"></i>
                     {% if is_liked %}
-                        Liked
+                    <i class="bi-hand-thumbs-up-fill"></i> Liked
                     {% else %}
-                        Like
+                    <i class="bi-hand-thumbs-up"></i> Like
                     {% endif %}
                 </button>
                 <i class="mt-1 btn btn-outline-dark bg-white text-dark">Total likes: {{ post.likes.count }}</i>
