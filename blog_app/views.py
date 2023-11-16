@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from .models import Post, Like, Category, Comment
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
     ListView,
     CreateView,
@@ -31,7 +32,7 @@ class HomePageView(ListView):
         return context
     
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin,CreateView):
     model = Post
     fields = ['title', 'content', 'categories', 'is_published', 'cover_image']
     
