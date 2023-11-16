@@ -53,28 +53,38 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         post = context['post']
-        context['is_liked'] = post.likes.filter(user=self.request.user).exists()
+        # Check if the user is authenticated before checking likes
+        context['is_liked'] = post.likes.filter(user=self.request.user).exists() if self.request.user.is_authenticated else False
+        context['title'] = 'Post Detail'
         return context
     
     def post(self, request, *args, **kwargs):
         # Handling comment submission
         if 'comment_content' in self.request.POST:
-            post = self.get_object()
-            comment_content = self.request.POST['comment_content']
-            Comment.objects.create(post=post, author=request.user, content=comment_content)
-            messages.success(request, 'Comment added successfully.')
-            return redirect('post-detail', pk=post.pk)
+            if self.request.user.is_authenticated:
+                post = self.get_object()
+                comment_content = self.request.POST['comment_content']
+                Comment.objects.create(post=post, author=request.user, content=comment_content)
+                messages.success(request, 'Comment added successfully.')
+                return redirect('post-detail', pk=post.pk)
+            else:
+                messages.warning(request, 'Can not comment on this post! You need to login first.')
+                return redirect('login')
 
         # Handling like button click
         if 'like_button' in self.request.POST:
-            post = self.get_object()
-            # Check if the user already liked the post
-            if not Like.objects.filter(post=post, user=request.user).exists():
-                Like.objects.create(post=post, user=request.user)
-                messages.success(request, 'Liked the post!')
+            if self.request.user.is_authenticated:
+                post = self.get_object()
+                # Check if the user already liked the post
+                if not Like.objects.filter(post=post, user=request.user).exists():
+                    Like.objects.create(post=post, user=request.user)
+                    messages.success(request, 'Liked the post!')
+                else:
+                    messages.warning(request, 'You have already liked this post.')
+                return redirect('post-detail', pk=post.pk)
             else:
-                messages.warning(request, 'You have already liked this post.')
-            return redirect('post-detail', pk=post.pk)
+                 messages.warning(request, 'Can not like the post! You need to login first.')
+                 return redirect('login')
 
         return super().post(request, *args, **kwargs)
     
