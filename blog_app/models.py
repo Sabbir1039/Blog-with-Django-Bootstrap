@@ -30,20 +30,36 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
+    
+    # resize image before saveing
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        try:
+            img = Image.open(self.cover_image.path)
+            # Set a maximum size for the profile picture
+            max_size = (800, 500)
+            if img.height > max_size[1] or img.width > max_size[0]:
+                img.thumbnail(max_size)
+                img.save(self.cover_image.path)
+        except Exception as e:
+            print("Error occured while resizing image!", e)
 
 @receiver(pre_save, sender=Post)
 def resize_cover_image(sender, instance, **kwargs):
     if instance.cover_image:
-        img = Image.open(instance.cover_image.path)
+        try:
+            img = Image.open(instance.cover_image.path)
 
-        # Define the desired size for your image
-        max_size = (800, 600)
+            # Define the desired size for your image
+            max_size = (800, 600)
 
-        # Resize the image while preserving its aspect ratio
-        img.thumbnail(max_size)
+            # Resize the image while preserving its aspect ratio
+            img.thumbnail(max_size)
 
-        # Save the resized image back to the same path
-        img.save(instance.cover_image.path)
+            # Save the resized image back to the same path
+            img.save(instance.cover_image.path)
+        except Exception as e:
+            print(f"Error resizing image: {e}")
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
