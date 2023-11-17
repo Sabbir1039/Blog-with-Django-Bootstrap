@@ -34,7 +34,7 @@ class HomePageView(ListView):
 class PostListView(ListView):
     model = Post
     context_object_name = "posts"
-    paginate_by = 5
+    paginate_by = 3
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
