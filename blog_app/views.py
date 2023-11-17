@@ -7,7 +7,10 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from .models import Post, Like, Category, Comment
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    )
 
 from django.views.generic import (
     ListView,
@@ -17,8 +20,8 @@ from django.views.generic import (
     DeleteView
     )
 
-# views here.
 
+# views here.
 class HomePageView(ListView):
     model = Post
     template_name = 'blog_app/home.html'
@@ -69,29 +72,9 @@ class PostCreateView(LoginRequiredMixin,CreateView):
         context['title'] = 'New Post'
         return context
     
-    def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        try:
-            # Additional validation for uploaded files
-            cover_image = form.cleaned_data.get('cover_image')
-            if cover_image:
-                # Ensure that only specific file types are allowed
-                allowed_file_types = ['image/jpeg', 'image/png']
-                if cover_image.content_type not in allowed_file_types:
-                    form.add_error('cover_image', 'Only JPEG and PNG images are allowed.')
-
-                # Check for a valid file name (you can customize this based on your requirements)
-                if not cover_image.name.lower().endswith(('.jpg', '.jpeg', '.png')):
-                    form.add_error('cover_image', 'Invalid file type. Only JPEG and PNG files are allowed.')
-
-            form.instance.author = self.request.user
-            return super().form_valid(form)
-
-        except Exception as e:
-            # Handle the exception here, you can log the error or take appropriate actions
-            # For example:
-            # logger.error(f"An error occurred: {e}")
-            form.add_error(None, 'An error occurred while processing the form.')
-            return self.form_invalid(form)     
+    def form_valid(self, form: BaseModelForm) -> HttpResponse: 
+        form.instance.author = self.request.user
+        return super().form_valid(form)   
     
 
 class PostDetailView(DetailView):
@@ -137,7 +120,7 @@ class PostDetailView(DetailView):
         return super().post(request, *args, **kwargs)
     
     
-class PostUpdateView(UpdateView):
+class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'categories', 'is_published', 'cover_image']
     
@@ -153,33 +136,22 @@ class PostUpdateView(UpdateView):
         return super().get_success_url()
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        try:
-            # Additional validation for uploaded files
-            cover_image = form.cleaned_data.get('cover_image')
-            if cover_image:
-                # Ensure that only specific file types are allowed
-                allowed_file_types = ['image/jpeg', 'image/png']
-                if cover_image.content_type not in allowed_file_types:
-                    form.add_error('cover_image', 'Only JPEG and PNG images are allowed.')
+        form.instance.author = self.request.user
+        return super().form_valid(form)  
+    
+    def test_func(self) -> bool | None:
+        post = self.get_object()
+        return self.request.user == post.author
 
-                # Check for a valid file name (you can customize this based on your requirements)
-                if not cover_image.name.lower().endswith(('.jpg', '.jpeg', '.png')):
-                    form.add_error('cover_image', 'Invalid file type. Only JPEG and PNG files are allowed.')
-
-            form.instance.author = self.request.user
-            return super().form_valid(form)
-
-        except Exception as e:
-            # Handle the exception here, you can log the error or take appropriate actions
-            # For example:
-            # logger.error(f"An error occurred: {e}")
-            form.add_error(None, 'An error occurred while processing the form.')
-            return self.form_invalid(form)
-
-class PostDeleteView(DeleteView):
+class PostDeleteView(UserPassesTestMixin, DeleteView):
     model = Post
     # success_url = reverse_lazy('home')
+    
+    def test_func(self) -> bool | None:
+        post = self.get_object()
+        return self.request.user == post.author
     
     def get_success_url(self):
         messages.success(self.request, 'Post deleted successfully.')
         return reverse_lazy('home')
+    
