@@ -3,10 +3,22 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
-from django.views.generic import CreateView, DetailView, UpdateView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import ( 
+        UserRegisterForm,
+        UserUpdateForm,
+        ProfileUpdateForm 
+        )
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    UpdateView
+    )
+from django.contrib.auth.views import (
+    LoginView,
+    LogoutView
+    )
 
 
 class UserRegistrationView(CreateView):
@@ -38,7 +50,7 @@ class UserRegistrationView(CreateView):
         return super().dispatch(*args, **kwargs)
 
 
-class UserProfileView(DetailView):
+class UserProfileView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'user_accounts/user_profile.html'
 
@@ -48,11 +60,11 @@ class UserProfileView(DetailView):
         context['title'] = f'Profile-{profile.user}'
         return context
     
+    # Ensure that the user can only view their own profile
     def get_object(self, queryset=None):
-        # Ensure that the user can only view their own profile
         return self.request.user.profile
     
-class UserProfileUpdateView(UpdateView):
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Profile
     form_class = UserUpdateForm
     template_name = 'user_accounts/user_profile_update.html'
@@ -60,8 +72,8 @@ class UserProfileUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('profile-detail', kwargs={'pk': self.object.pk})
     
+    # Ensure that the user can only view their own profile
     def get_object(self, queryset=None):
-        # Ensure that the user can only view their own profile
         return self.request.user
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
