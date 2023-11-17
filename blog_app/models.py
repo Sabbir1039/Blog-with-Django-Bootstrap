@@ -44,22 +44,22 @@ class Post(models.Model):
         except Exception as e:
             print("Error occured while resizing image!", e)
 
-@receiver(pre_save, sender=Post)
-def resize_cover_image(sender, instance, **kwargs):
-    if instance.cover_image:
-        try:
-            img = Image.open(instance.cover_image.path)
+# @receiver(pre_save, sender=Post)
+# def resize_cover_image(sender, instance, **kwargs):
+#     if instance.cover_image:
+#         try:
+#             img = Image.open(instance.cover_image.path)
 
-            # Define the desired size for your image
-            max_size = (800, 600)
+#             # Define the desired size for your image
+#             max_size = (800, 600)
 
-            # Resize the image while preserving its aspect ratio
-            img.thumbnail(max_size)
+#             # Resize the image while preserving its aspect ratio
+#             img.thumbnail(max_size)
 
-            # Save the resized image back to the same path
-            img.save(instance.cover_image.path)
-        except Exception as e:
-            print(f"Error resizing image: {e}")
+#             # Save the resized image back to the same path
+#             img.save(instance.cover_image.path)
+#         except Exception as e:
+#             print(f"Error resizing image: {e}")
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
