@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from .models import Post, Like, Category, Comment
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.views.generic import (
     ListView,
     CreateView,
@@ -15,7 +16,8 @@ from django.views.generic import (
     UpdateView,
     DeleteView
     )
-# Create your views here.
+
+# views here.
 
 class HomePageView(ListView):
     model = Post
@@ -26,7 +28,7 @@ class HomePageView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Blog Home'
         context['recent_posts'] = Post.objects.all().order_by('-created_at')[:5]
-        most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:5]
+        most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:3]
         context['featured_posts'] = most_liked_posts
         context['categories'] = Category.objects.all()
         return context
@@ -68,8 +70,28 @@ class PostCreateView(LoginRequiredMixin,CreateView):
         return context
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+        try:
+            # Additional validation for uploaded files
+            cover_image = form.cleaned_data.get('cover_image')
+            if cover_image:
+                # Ensure that only specific file types are allowed
+                allowed_file_types = ['image/jpeg', 'image/png']
+                if cover_image.content_type not in allowed_file_types:
+                    form.add_error('cover_image', 'Only JPEG and PNG images are allowed.')
+
+                # Check for a valid file name (you can customize this based on your requirements)
+                if not cover_image.name.lower().endswith(('.jpg', '.jpeg', '.png')):
+                    form.add_error('cover_image', 'Invalid file type. Only JPEG and PNG files are allowed.')
+
+            form.instance.author = self.request.user
+            return super().form_valid(form)
+
+        except Exception as e:
+            # Handle the exception here, you can log the error or take appropriate actions
+            # For example:
+            # logger.error(f"An error occurred: {e}")
+            form.add_error(None, 'An error occurred while processing the form.')
+            return self.form_invalid(form)     
     
 
 class PostDetailView(DetailView):
@@ -129,6 +151,30 @@ class PostUpdateView(UpdateView):
     def get_success_url(self):
         messages.success(self.request, 'Post Updated successfully.')
         return super().get_success_url()
+    
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        try:
+            # Additional validation for uploaded files
+            cover_image = form.cleaned_data.get('cover_image')
+            if cover_image:
+                # Ensure that only specific file types are allowed
+                allowed_file_types = ['image/jpeg', 'image/png']
+                if cover_image.content_type not in allowed_file_types:
+                    form.add_error('cover_image', 'Only JPEG and PNG images are allowed.')
+
+                # Check for a valid file name (you can customize this based on your requirements)
+                if not cover_image.name.lower().endswith(('.jpg', '.jpeg', '.png')):
+                    form.add_error('cover_image', 'Invalid file type. Only JPEG and PNG files are allowed.')
+
+            form.instance.author = self.request.user
+            return super().form_valid(form)
+
+        except Exception as e:
+            # Handle the exception here, you can log the error or take appropriate actions
+            # For example:
+            # logger.error(f"An error occurred: {e}")
+            form.add_error(None, 'An error occurred while processing the form.')
+            return self.form_invalid(form)
 
 class PostDeleteView(DeleteView):
     model = Post

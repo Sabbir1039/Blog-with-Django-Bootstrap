@@ -37,7 +37,7 @@ class Post(models.Model):
         try:
             img = Image.open(self.cover_image.path)
             # Set a maximum size for the profile picture
-            max_size = (800, 500)
+            max_size = (1080, 620)
             if img.height > max_size[1] or img.width > max_size[0]:
                 img.thumbnail(max_size)
                 img.save(self.cover_image.path)
