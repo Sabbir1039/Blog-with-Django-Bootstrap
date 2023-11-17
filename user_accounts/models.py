@@ -27,11 +27,13 @@ class Profile(models.Model):
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        try:
+            img = Image.open(self.profile_pic.path)
 
-        img = Image.open(self.profile_pic.path)
-
-        # Set a maximum size for the profile picture
-        max_size = (300, 300)
-        if img.height > max_size[1] or img.width > max_size[0]:
-            img.thumbnail(max_size)
-            img.save(self.profile_pic.path)
+            # Set a maximum size for the profile picture
+            max_size = (300, 300)
+            if img.height > max_size[1] or img.width > max_size[0]:
+                img.thumbnail(max_size)
+                img.save(self.profile_pic.path)
+        except Exception as e:
+            print("Error occured while resizing image!", e)
