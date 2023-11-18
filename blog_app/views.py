@@ -5,8 +5,17 @@ from django.forms.models import BaseModelForm
 from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from .models import Post, Like, Category, Comment
+from django.shortcuts import redirect, get_object_or_404
+from django.http import Http404
+
+
+from .models import (
+    Post,
+    Like,
+    Category,
+    Comment
+    )
+
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     UserPassesTestMixin,
@@ -142,6 +151,7 @@ class PostUpdateView(UserPassesTestMixin, UpdateView):
     def test_func(self) -> bool | None:
         post = self.get_object()
         return self.request.user == post.author
+     
 
 class PostDeleteView(UserPassesTestMixin, DeleteView):
     model = Post
@@ -154,4 +164,6 @@ class PostDeleteView(UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         messages.success(self.request, 'Post deleted successfully.')
         return reverse_lazy('home')
+    
+   
     
