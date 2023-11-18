@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404
 from urllib.parse import urlparse, parse_qs
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import (
     Post,
@@ -71,33 +72,64 @@ class PostListView(ListView):
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['title'] = "All Posts"
-        context['categories'] = Category.objects.all()
+        try:
+            context['title'] = "All Posts"
+            context['categories'] = Category.objects.all()
+            
+            # Parse the URL and extract the 'category' and search parameter
+            parsed_url = urlparse(self.request.get_full_path())
+            query_params = parse_qs(parsed_url.query)
+            category_id = query_params.get('category', [None])[0]
+            search_str = query_params.get('search', [None])[0]
+            # Add the selected category and search str to the context
+            context['selected_category'] = int(category_id) if category_id is not None else None # [hint]initially this is string not int
+            context['searched_text'] = str(search_str) if search_str is not None else None # [hint] this is string
+            return context
         
-        # Parse the URL and extract the 'category' and search parameter
-        parsed_url = urlparse(self.request.get_full_path())
-        query_params = parse_qs(parsed_url.query)
-        category_id = query_params.get('category', [None])[0]
-        search_str = query_params.get('search', [None])[0]
-        # Add the selected category and search str to the context
-        context['selected_category'] = int(category_id) if category_id is not None else None # [hint]initially this is string not int
-        context['searched_text'] = str(search_str) if search_str is not None else None # [hint] this is string
+        except (Category.DoesNotExist) as e:
+            # Handle the specific exceptions expect to encounter
+            logger.error(f"Error retrieving category data for PostListView: {e}")
+            context['error_message'] = "An error occurred while retrieving data."
+            raise e  # Re-raise the exception to stop further execution
+            
+        except Http404 as e:
+            # Handle Http404 exception
+            logger.warning(f"Page not found in PostListView: {e}")
+            raise e  # Re-raise Http404 to allow Django to handle it
         
+        except Exception as e:
+            # Handle any unexpected exceptions
+            logger.exception(f"Uncaught exception in PostListView: {e}")
+            context['error_message'] = "An unexpected error occurred while processing your request."
         return context
     
     def get_queryset(self) -> QuerySet[Any]:
         queryset = super().get_queryset()
         category_id = self.request.GET.get('category')
         search_query = self.request.GET.get('search')
-        
-        # Apply category filter
-        if category_id:
-            queryset = queryset.filter(categories__id = category_id)
-            
-        # Apply search filter
-        if search_query:
-            queryset = queryset.filter(title__icontains=search_query)
-        return queryset
+
+        try:
+            # Apply category filter
+            if category_id:
+                queryset = queryset.filter(categories__id=category_id)
+
+            # Apply search filter
+            if search_query:
+                queryset = queryset.filter(title__icontains=search_query)
+
+            return queryset
+
+        except ObjectDoesNotExist as e:
+            # Handle the specific exceptions expect to encounter
+            logger.error(f"Error retrieving queryset data for PostListView: {e}")
+            # may want to set an error message in the context here if needed
+            raise e  # Re-raise the exception to stop further execution
+
+        except Exception as e:
+            # Handle any unexpected exceptions
+            logger.exception(f"Uncaught exception in PostListView: {e}")
+            # may want to set an error message in the context here if needed
+            raise e  # Re-raise the exception to stop further execution
             
 
 class PostCreateView(LoginRequiredMixin,CreateView):
