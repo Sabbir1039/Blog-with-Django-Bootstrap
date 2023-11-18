@@ -27,7 +27,8 @@ from django.views.generic import (
     CreateView,
     DetailView,
     UpdateView,
-    DeleteView
+    DeleteView,
+    TemplateView,
     )
 
 import logging
@@ -226,5 +227,10 @@ class PostDeleteView(UserPassesTestMixin, DeleteView):
         messages.success(self.request, 'Post deleted successfully.')
         return reverse_lazy('home')
     
-   
+class AboutView(TemplateView):
+    template_name = 'blog_app/about.html'
     
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'About'
+        return context
