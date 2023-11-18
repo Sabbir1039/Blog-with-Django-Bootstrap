@@ -30,15 +30,20 @@
                 
                 <!-- Display category name when user request for specific category post -->
                 <div class="my-2">
-                    <p>
+                    <p class="font-weight-light">
                         {% if selected_category %}
-                            Showing results for:
+                            Showing results for category:
                             {% for category in categories %}
                                 <!-- first we need to convert selected_category to int -->
-                                {% if category.id == selected_category|default:""|add:"0" %} 
+                                {% if category.id == selected_category %} 
                                     {{ category.name }}
                                 {% endif %}
                             {% endfor %}
+                        {% endif %}
+                    </p>
+                    <p class="mt-1 font-weight-light">
+                        {% if searched_text %}
+                            Showing results for searched text: {{ searched_text }}
                         {% endif %}
                     </p>
                 </div>
