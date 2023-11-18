@@ -29,6 +29,10 @@ from django.views.generic import (
     DeleteView
     )
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # views here.
 class HomePageView(ListView):
@@ -37,12 +41,27 @@ class HomePageView(ListView):
     context_object_name = 'posts'
      
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Blog Home'
-        context['recent_posts'] = Post.objects.all().order_by('-created_at')[:5]
-        most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:3]
-        context['featured_posts'] = most_liked_posts
-        context['categories'] = Category.objects.all()
+        try:
+            context = super().get_context_data(**kwargs)
+            context['title'] = 'Blog Home'
+            context['recent_posts'] = Post.objects.all().order_by('-created_at')[:5]
+            most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:3]
+            context['featured_posts'] = most_liked_posts
+            context['categories'] = Category.objects.all()
+            return context
+        except (Post.DoesNotExist, Category.DoesNotExist) as e:
+            # Handle the specific exceptions you expect to encounter
+            logger.error(f"Error retrieving data for HomePageView: {e}")
+            context['error_message'] = "An error occurred while retrieving data."
+        except Http404 as e:
+            # Handle Http404 exception
+            logger.warning(f"Page not found in HomePageView: {e}")
+            raise e  # Re-raise Http404 to allow Django to handle it
+        except Exception as e:
+            # Handle any unexpected exceptions
+            logger.exception(f"Uncaught exception in HomePageView: {e}")
+            context['error_message'] = "An unexpected error occurred while processing your request."
+
         return context
     
 class PostListView(ListView):
