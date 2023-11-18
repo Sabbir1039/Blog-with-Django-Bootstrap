@@ -71,7 +71,7 @@
                 <div class="h5 mb-3">Categories</div>
                 <ul class="list-unstyled ml-2">
                     {% for item in categories %}
-                    <li class="mb-2">
+                    <li class="mb-2 btn btn-outline-info">
                         <a href="{% url 'post-list' %}?category={{ item.id }}" class="text-decoration-none text-dark">
                             <i class="bi bi-bookmark-star mr-2"></i>{{ item.name }}
                         </a>
