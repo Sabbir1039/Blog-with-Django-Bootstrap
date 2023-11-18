@@ -40,7 +40,7 @@ class HomePageView(ListView):
     template_name = 'blog_app/home.html'
     context_object_name = 'posts'
      
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]: # key: string type & value: any type
         context = super().get_context_data(**kwargs)
         try:
             context['title'] = 'Blog Home'
