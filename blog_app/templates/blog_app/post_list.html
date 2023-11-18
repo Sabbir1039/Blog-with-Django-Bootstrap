@@ -7,7 +7,7 @@
                 <h2 class="my-1">All Posts</h2>
                 
                 <form class="my-2" method="GET" action="{% url 'post-list' %}">
-                    <div class="row">
+                    <div class="form-row align-items-center">
                         <div class="form-group col-md-4">
                             <label for="category">Filter by Category:</label>
                             <select name="category" class="form-control">
@@ -21,8 +21,11 @@
                             <label for="search">Search:</label>
                             <input type="text" name="search" class="form-control" placeholder="Search...">
                         </div>
+                        <div class="col-md-4 mt-3">
+                            <button type="submit" class="btn btn-md btn-primary">Apply Filters</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-md btn-primary">Apply Filters</button>
+                    
                 </form>
                 
                 <!-- Display category name when user request for specific category post -->
