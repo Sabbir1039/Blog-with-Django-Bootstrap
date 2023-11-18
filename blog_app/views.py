@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404
-
+from urllib.parse import urlparse, parse_qs
 
 from .models import (
     Post,
@@ -73,6 +73,13 @@ class PostListView(ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = "All Posts"
         context['categories'] = Category.objects.all()
+        # Parse the URL and extract the 'category' parameter
+        parsed_url = urlparse(self.request.get_full_path())
+        query_params = parse_qs(parsed_url.query)
+        category_id = query_params.get('category', [None])[0]
+        # Add the selected category to the context
+        context['selected_category'] = category_id # [hint] this is string not int
+        # print('Requested Category id:', type(context['selected_category']))
         return context
     
     def get_queryset(self) -> QuerySet[Any]:

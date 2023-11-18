@@ -24,6 +24,25 @@
                     </div>
                     <button type="submit" class="btn btn-md btn-primary">Apply Filters</button>
                 </form>
+                
+                <!-- Display category name when user request for specific category post -->
+                <div class="my-2">
+                    <p>
+                        {% if selected_category %}
+                            Showing results for:
+                            {% for category in categories %}
+                                <!-- first we need to convert selected_category to int -->
+                                {% if category.id == selected_category|default:""|add:"0" %} 
+                                    {{ category.name }}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </p>
+                </div>
+                
+                
+                
+                
 
                 {% for post in posts %}
                     <div class="card mb-3">

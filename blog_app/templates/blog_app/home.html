@@ -72,7 +72,7 @@
                 <ul class="list-unstyled ml-2">
                     {% for item in categories %}
                     <li class="mb-2">
-                        <a href="#" class="text-decoration-none text-dark">
+                        <a href="{% url 'post-list' %}?category={{ item.id }}" class="text-decoration-none text-dark">
                             <i class="bi bi-bookmark-star mr-2"></i>{{ item.name }}
                         </a>
                     </li>
