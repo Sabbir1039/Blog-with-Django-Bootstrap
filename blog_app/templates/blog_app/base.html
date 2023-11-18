@@ -31,10 +31,17 @@
                     </div>
                 {% endfor %}
             {% endif %}
+            <!-- error messages from error handling -->
+            {% if error_message %}
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> {{ error_message }}
+                </div>
+            {% else %}
+                {% block content %}
+                <!-- Default content, if any -->
+                {% endblock %}
+            {% endif %}
             
-            {% block content %}
-            <!-- Default content, if any -->
-            {% endblock %}
         </div>
     
         <!-- Include the footer -->
