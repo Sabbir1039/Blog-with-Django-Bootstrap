@@ -5,7 +5,7 @@ from PIL import Image
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(null=True, blank=True, verbose_name = 'Date of Birth')
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name = 'Date of birth') # verbose name is for display in admin interface and other forms
     profile_pic = models.ImageField(default='default_pic.png', upload_to='profile_pics')
     
     def __str__(self) -> str:

@@ -2,10 +2,11 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container vh-100 bg-light d-flex align-items-center justify-content-center">
-    <div class="form container my-5 p-4 rounded">
-        <h3 class="text-center bg-info">Logged Out Successfully!</h3>
+<div class="container vh-100 bg-light d-flex align-items-center justify-content-center rounded">
+    <div class="form bg-white container my-5 p-4 rounded">
+        <h5 class="text-center bg-info text-white p-2">Logged Out Successfully!</h5>
         <p class="text-center">Log In Again! <a href="{% url 'login' %}">Sign In</a></p>
+        <p class="text-center">Back to home page! <a href="{% url 'home' %}">Blog Home</a></p>
     </div>
 </div>
 {% endblock %}

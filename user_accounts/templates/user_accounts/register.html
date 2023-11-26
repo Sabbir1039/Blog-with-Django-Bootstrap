@@ -2,10 +2,10 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container px-3 bg-light">
+<div class="container px-3 bg-light rounded">
     <div class="form container p-4 bg-white">
-        <h3 class="text-center">Author Registration Form</h3>
-        <form method="post" class="p-3 needs-validation" novalidate>
+        <h4 class="text-center bg-info p-2 text-white rounded">Author Registration Form</h4>
+        <form method="post" class="p-3 needs-validation mb-0" novalidate>
             <fieldset>
                 {% csrf_token %}
                 {{ form|crispy }}
@@ -14,7 +14,8 @@
                 </div>
             </fieldset>
         </form>
-        <p class="text-center">Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+        <p class="text-center mb-0">Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+        <p class="text-center">Back to home page! <a href="{% url 'home' %}">Blog Home</a></p>
     </div>
 </div>
 {% endblock %}

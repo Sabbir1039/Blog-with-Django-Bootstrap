@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container vh-100 bg-light d-flex justify-content-center align-items-center">
     <div class="form container rounded bg-white">
-        <h3 class="text-center">Login Form</h3>
+        <h4 class="text-center p-2 bg-info rounded text-white">Login Form</h4>
         <form method="post" class="p-3">
             <fieldset>
                 {% csrf_token %}
@@ -14,8 +14,9 @@
                 </div>
             </fieldset>
         </form>
-        <p class="text-center">Forgot your password <a href="{% url 'password_reset' %}">Reset Password</a></p>
-        <p class="text-center">Don't have an account? <a href="{% url 'register' %}">Sign Up</a></p>
+        <p class="text-center mb-0">Forgot your password? <a href="{% url 'password_reset' %}">Reset Password</a></p>
+        <p class="text-center mb-0">Don't have an account? <a href="{% url 'register' %}">Sign Up</a></p>
+        <p class="text-center">Back to home page! <a href="{% url 'home' %}">Blog Home</a></p>
     </div>
 </div>
 {% endblock %}
