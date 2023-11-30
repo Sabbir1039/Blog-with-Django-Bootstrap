@@ -1,0 +1,38 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#navbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* Optional: Apply a box shadow for a softer edge */
+}
+
+#brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(8, 8, 78);
+}
+
+#hero {
+    background: linear-gradient(170deg, #bfe2ec, rgb(224, 248, 242));
+}
+
+#hero h2 {
+    font-size: 42px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+/* Post Detail page style */
+#post_detail {
+    max-width: 900px;
+}
+
+#post_detail img {
+    max-height: 400px;
+}
+
+/* #post-list img {
+    max-width: 600px;
+    max-height: 400px;
+} */
+
+
