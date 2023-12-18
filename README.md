@@ -6,12 +6,12 @@ Welcome to the full featured django blog web app, a versatile web application th
 
 This Django project combines two essential components:
 
-- **Blog App:** Allows users to create, edit, and delete blog posts, categorize them, leave comments, and like posts.
-- **User Accounts App:** Provides user registration, authentication, reset user password with email and profile management functionalities, including the option to upload profile pictures.
+- [Blog App:](#django-blog-app-explanation) Allows users to create, edit, and delete blog posts, categorize them, leave comments, and like posts.
+- [User Accounts App:](#django-user-accounts-app) Provides user registration, authentication, reset user password with email and profile management functionalities, including the option to upload profile pictures.
 
 ## Project Structure
 
-The project follows a modular structure to enhance maintainability and organization. Below is a sample project structure to help you navigate the codebase effectively:
+The project follows a modular structure to enhance maintainability and organization. Below is a sample project structure to will help navigate the codebase effectively:
 
 ```plaintext
 django_blog_and_user_accounts/
@@ -22,7 +22,6 @@ django_blog_and_user_accounts/
 |   |-- __init__.py
 |   |-- admin.py
 |   |-- apps.py
-|   |-- forms.py
 |   |-- models.py
 |   |-- tests.py
 |   |-- urls.py
@@ -49,7 +48,44 @@ django_blog_and_user_accounts/
 |-- requirements.txt
 |-- README.md
 ```
-## Django Blog App Explanation (*with codes*)
+## Installation
+### Prerequisites
+- [Python](https://www.python.org/downloads/) (3.6 or higher)
+- [pip](https://pip.pypa.io/en/stable/installation/)
+
+#### Create Virtual Environment (Optional but Recommended)
+  ```bash
+  python -m venv venv
+  ```
+#### Activate the virtual environment:
+- On Windows:
+  ```bash
+  venv\Scripts\activate
+  ```
+- On macOS/Linux:
+  ```bash
+  source venv/bin/activate
+  ```
+#### Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+#### Project Configuration
+- Set Up Database
+    ```bash
+    python manage.py migrate
+    ```
+- Create Superuser (Optional)
+  ```bash
+  python manage.py createsuperuser
+  ```
+- Run the Development Server
+  ```bash
+  python manage.py runserver
+  ```
+
+
+## Django Blog App Explanation
 
 ## Overview
 
@@ -75,98 +111,68 @@ from django.urls import reverse
 
 ### Category Model
 
-The `Category` model represents a blog category with a name and an optional description.
-
-```python
-# models.py
-class Category(models.Model):
-    name = models.CharField(max_length=200, unique=True)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-```
+The `Category` model represents a blog post category, featuring a unique name with a maximum length of 200 characters. It includes an optional description field for additional context. This model is essential for organizing and categorizing blog posts.
 
 ### Post Model
 
-The `Post` model represents a blog post with a title, content, creation and update timestamps, author, categories, publication status, and a cover image.
+The `Post` model represents a blog post with the following attributes:
 
-```python
-# models.py
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
-    categories = models.ManyToManyField(Category, related_name='posts')
-    is_published = models.BooleanField(default=True)
-    cover_image = models.ImageField(default='cover.jpg', upload_to='cover_pics')
-    
-    class Meta:
-        ordering = ['-created_at']
+- `title`: The title of the post.
+- `content`: The main content of the post.
+- `created_at`: The timestamp when the post was created.
+- `updated_at`: The timestamp when the post was last updated.
+- `author`: The author of the post, linked to the User model.
+- `categories`: Many-to-many relationship with the Category model, allowing posts to belong to multiple categories.
+- `is_published`: A boolean field indicating whether the post is published (default is True).
+- `cover_image`: An image field for the post's cover image, with a default image and uploaded to the 'cover_pics' directory.
 
-    def __str__(self):
-        return self.title
-    
-    def get_absolute_url(self):
-        return reverse('post-detail', kwargs={'pk': self.pk})
-    
-    # resize image before saveing
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        try:
-            img = Image.open(self.cover_image.path)
-            # Set a maximum size for the profile picture
-            max_size = (1080, 620)
-            if img.height > max_size[1] or img.width > max_size[0]:
-                img.thumbnail(max_size)
-                img.save(self.cover_image.path)
-        except Exception as e:
-            print("Error occured while resizing image!", e)
-```
+##### Methods
+
+- `__str__()`: Returns the title of the post.
+- `get_absolute_url()`: Returns the absolute URL for the post detail view.
+
+##### Meta
+
+- The model is ordered by `-created_at` in descending order by default.
+
+##### Save Method
+
+- The `save()` method resizes the cover image to a maximum size (1080x620) before saving the post.
+
+Note: Ensure you have included the `Post` model in your project's `models.py` file and have run migrations to apply changes to the database.
 
 ### Comment Model
 
-The `Comment` model represents a user comment on a blog post.
+The `Comment` model represents a comment on a blog post with the following attributes:
 
-```python
-# models.py
-class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        ordering = ['created_at']
+- `post`: The post to which the comment is associated, linked to the Post model.
+- `author`: The author of the comment, linked to the User model.
+- `content`: The content of the comment.
+- `created_at`: The timestamp when the comment was created.
 
-    def __str__(self):
-        return f"Comment by {str(self.author)} on {str(self.post)}"
-```
+##### Methods
+
+- `__str__()`: Returns a string representation of the comment mentioning the author and the post.
+
 
 ### Like Model
 
-The `Like` model represents a user's like on a blog post.
+The `Like` model represents a user's like on a blog post with the following attributes:
 
-```python
-# models.py
-class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
+- `post`: The post that is liked, linked to the Post model.
+- `user`: The user who liked the post, linked to the User model.
 
-    class Meta:
-        # Ensure each user can only like a post once.
-        unique_together = ('post', 'user')  
+##### Meta
 
-    def __str__(self):
-        return f"Like by {self.user} on {self.post}"
-```
+- Ensures each user can only like a post once by specifying `unique_together = ('post', 'user')`.
+
+
 
 ## Views
 
 The app contains various views, including the home page, post list, post creation, post detail, post update, post delete, and an about page.
 
+### Imports
 ```python
 from typing import Any
 from django.db.models.query import QuerySet
@@ -179,7 +185,6 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http import Http404
 from urllib.parse import urlparse, parse_qs
 from django.core.exceptions import ObjectDoesNotExist
-
 from .models import (
     Post,
     Like,
@@ -200,240 +205,225 @@ from django.views.generic import (
     DeleteView,
     TemplateView,
     )
-
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-# views here.
-class HomePageView(ListView):
-    model = Post
-    template_name = 'blog_app/home.html'
-    context_object_name = 'posts'
-     
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]: # key: string type & value: any type
-        context = super().get_context_data(**kwargs)
-        try:
-            context['title'] = 'Blog Home'
-            context['recent_posts'] = Post.objects.all().order_by('-created_at')[:5]
-            most_liked_posts = Post.objects.annotate(like_count=models.Count('likes')).order_by('-like_count')[:3]
-            context['featured_posts'] = most_liked_posts
-            context['categories'] = Category.objects.all()
-            return context
-        except (Post.DoesNotExist, Category.DoesNotExist) as e:
-            # Handle the specific exceptions expect to encounter
-            logger.error(f"Error retrieving data for HomePageView: {e}")
-            context['error_message'] = "An error occurred while retrieving data."
-        except Http404 as e:
-            # Handle Http404 exception
-            logger.warning(f"Page not found in HomePageView: {e}")
-            raise e  # Re-raise Http404 to allow Django to handle it
-        except Exception as e:
-            # Handle any unexpected exceptions
-            logger.exception(f"Uncaught exception in HomePageView: {e}")
-            context['error_message'] = "An unexpected error occurred while processing your request."
-
-        return context
-    
-class PostListView(ListView):
-    model = Post
-    context_object_name = "posts"
-    paginate_by = 3
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        try:
-            context['title'] = "All Posts"
-            context['categories'] = Category.objects.all()
-            
-            # Parse the URL and extract the 'category' and search parameter
-            parsed_url = urlparse(self.request.get_full_path())
-            query_params = parse_qs(parsed_url.query)
-            category_id = query_params.get('category', [None])[0]
-            search_str = query_params.get('search', [None])[0]
-            # Add the selected category and search str to the context
-            context['selected_category'] = int(category_id) if category_id is not None else None # [hint]initially this is string not int
-            context['searched_text'] = str(search_str) if search_str is not None else None # [hint] this is string
-            return context
-        
-        except (Category.DoesNotExist) as e:
-            # Handle the specific exceptions expect to encounter
-            logger.error(f"Error retrieving category data for PostListView: {e}")
-            context['error_message'] = "An error occurred while retrieving data."
-            raise e  # Re-raise the exception to stop further execution
-            
-        except Http404 as e:
-            # Handle Http404 exception
-            logger.warning(f"Page not found in PostListView: {e}")
-            raise e  # Re-raise Http404 to allow Django to handle it
-        
-        except Exception as e:
-            # Handle any unexpected exceptions
-            logger.exception(f"Uncaught exception in PostListView: {e}")
-            context['error_message'] = "An unexpected error occurred while processing your request."
-        return context
-    
-    def get_queryset(self) -> QuerySet[Any]:
-        queryset = super().get_queryset()
-        category_id = self.request.GET.get('category')
-        search_query = self.request.GET.get('search')
-
-        try:
-            # Apply category filter
-            if category_id:
-                queryset = queryset.filter(categories__id=category_id)
-
-            # Apply search filter
-            if search_query:
-                queryset = queryset.filter(title__icontains=search_query)
-
-            return queryset
-
-        except ObjectDoesNotExist as e:
-            # Handle the specific exceptions expect to encounter
-            logger.error(f"Error retrieving queryset data for PostListView: {e}")
-            # may want to set an error message in the context here if needed
-            raise e  # Re-raise the exception to stop further execution
-
-        except Exception as e:
-            # Handle any unexpected exceptions
-            logger.exception(f"Uncaught exception in PostListView: {e}")
-            # may want to set an error message in the context here if needed
-            raise e  # Re-raise the exception to stop further execution
-            
-
-class PostCreateView(LoginRequiredMixin,CreateView):
-    model = Post
-    fields = ['title', 'content', 'categories', 'is_published', 'cover_image']
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['header'] = 'Create New Post'
-        context['title'] = 'New Post'
-        return context
-    
-    def form_valid(self, form: BaseModelForm) -> HttpResponse: 
-        form.instance.author = self.request.user
-        return super().form_valid(form)   
-    
-
-class PostDetailView(DetailView):
-    model = Post
-    context_object_name = 'post'
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        post = context['post']
-        # Check if the user is authenticated before checking likes
-        context['is_liked'] = post.likes.filter(user=self.request.user).exists() if self.request.user.is_authenticated else False
-        context['title'] = f'Post-{post.title}'
-        return context
-    
-    def post(self, request, *args, **kwargs):
-        # Handling comment submission
-        if 'comment_content' in self.request.POST:
-            if self.request.user.is_authenticated:
-                post = self.get_object()
-                comment_content = self.request.POST['comment_content']
-                Comment.objects.create(post=post, author=request.user, content=comment_content)
-                messages.success(request, 'Comment added successfully.')
-                return redirect('post-detail', pk=post.pk)
-            else:
-                messages.warning(request, 'Can not comment on this post! You need to login first.')
-                return redirect('login')
-
-        # Handling like button click
-        if 'like_button' in self.request.POST:
-            if self.request.user.is_authenticated:
-                post = self.get_object()
-                # Check if the user already liked the post
-                if not Like.objects.filter(post=post, user=request.user).exists():
-                    Like.objects.create(post=post, user=request.user)
-                    messages.success(request, 'Liked the post!')
-                else:
-                    messages.warning(request, 'You have already liked this post.')
-                return redirect('post-detail', pk=post.pk)
-            else:
-                 messages.warning(request, 'Can not like the post! You need to login first.')
-                 return redirect('login')
-
-        return super().post(request, *args, **kwargs)
-    
-    
-class PostUpdateView(UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['title', 'content', 'categories', 'is_published', 'cover_image']
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        post = self.get_object()
-        context['header'] = f'Update Post: {post.title}'
-        context['title'] = f'Update-{post.title}'
-        return context
-    
-    def get_success_url(self):
-        messages.success(self.request, 'Post Updated successfully.')
-        return super().get_success_url()
-    
-    def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        form.instance.author = self.request.user
-        return super().form_valid(form)  
-    
-    def test_func(self) -> bool | None:
-        post = self.get_object()
-        return self.request.user == post.author
-     
-
-class PostDeleteView(UserPassesTestMixin, DeleteView):
-    model = Post
-    # success_url = reverse_lazy('home')
-    
-    def test_func(self) -> bool | None:
-        post = self.get_object()
-        return self.request.user == post.author
-    
-    def get_success_url(self):
-        messages.success(self.request, 'Post deleted successfully.')
-        return reverse_lazy('home')
-    
-class AboutView(TemplateView):
-    template_name = 'blog_app/about.html'
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'About'
-        return context
 ```
+## HomePageView
 
-## URLs
+The `HomePageView` is a Django class-based view that extends `ListView` to display a list of blog posts on the home page.
 
-The app defines URLs for the home page, post list, post creation, post detail, post update, post delete, and about page.
+##### Attributes
+
+- `model`: Specifies the model used for the view (`Post` model in this case).
+- `template_name`: Defines the template used to render the view ('blog_app/home.html').
+- `context_object_name`: Sets the variable name for the list of posts in the template ('posts').
+
+##### Methods
+
+##### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Sets attributes such as `title`, `recent_posts`, `featured_posts`, and `categories` for dynamic content.
+- Handles exceptions for potential errors during data retrieval and logging.
+
+## PostListView
+
+The `PostListView` is a Django class-based view extending `ListView` to display a paginated list of blog posts.
+
+##### Attributes
+
+- `model`: Specifies the model used for the view (`Post` model).
+- `context_object_name`: Sets the variable name for the list of posts in the template ('posts').
+- `paginate_by`: Determines the number of posts to display per page (3 in this case).
+
+##### Methods
+
+##### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Extracts URL parameters such as 'category' and 'search' to filter posts accordingly.
+- Handles exceptions during data retrieval and logging.
+
+##### `get_queryset()`
+
+- Overrides the `get_queryset` method to filter the queryset based on 'category' and 'search' parameters.
+- Applies category and search filters to the queryset.
+- Handles exceptions during queryset retrieval and logging.
+
+## PostCreateView
+
+The `PostCreateView` is a Django class-based view extending `CreateView` to handle the creation of new blog posts.
+
+##### Attributes
+
+- `model`: Specifies the model used for the view (`Post` model).
+- `fields`: Determines the fields from the model that should be included in the form.
+
+##### Methods
+
+##### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Sets attributes such as `header` and `title` for a new post creation.
+
+##### `form_valid()`
+
+- Overrides the `form_valid` method to set the post author as the current logged-in user before form submission.
+
+## PostDetailView
+
+The `PostDetailView` is a Django class-based view extending `DetailView` to display detailed information about a single blog post.
+
+##### Attributes
+
+- `model`: Specifies the model used for the view (`Post` model).
+- `context_object_name`: Sets the variable name for the post object in the template ('post').
+
+##### Methods
+
+##### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Checks if the current user has liked the post and sets the `is_liked` attribute accordingly.
+- Sets the title attribute based on the post title.
+
+##### `post()`
+
+- Handles POST requests, allowing users to submit comments and like the post.
+- Checks user authentication status before processing actions.
+- Handles comment submission and like button clicks, providing appropriate feedback messages.
+
+## PostUpdateView
+
+The `PostUpdateView` is a Django class-based view extending `UpdateView` to handle the updating of existing blog posts.
+
+##### Attributes
+
+- `model`: Specifies the model used for the view (`Post` model).
+- `fields`: Determines the fields from the model that should be included in the update form.
+
+##### Methods
+
+##### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Sets attributes such as `header` and `title` for updating a specific post.
+
+##### `get_success_url()`
+
+- Overrides the `get_success_url` method to set a success message upon updating the post.
+
+##### `form_valid()`
+
+- Overrides the `form_valid` method to set the post author as the current logged-in user before form submission.
+
+##### `test_func()`
+
+- Overrides the `test_func` method from `UserPassesTestMixin` to check if the current user is the author of the post being updated.
+
+## PostDeleteView
+
+The `PostDeleteView` is a Django class-based view extending `DeleteView` to handle the deletion of existing blog posts.
+
+##### Attributes
+
+- `model`: Specifies the model used for the view (`Post` model).
+
+##### Methods
+
+##### `test_func()`
+
+- Overrides the `test_func` method from `UserPassesTestMixin` to check if the current user is the author of the post being deleted.
+
+##### `get_success_url()`
+
+- Overrides the `get_success_url` method to set a success message upon deleting the post and redirecting to the home page.
+
+## AboutView
+
+The `AboutView` is a Django class-based view extending `TemplateView` to render an about page.
+
+##### Attributes
+
+- `template_name`: Specifies the template used for rendering the view ('blog_app/about.html').
+
+##### Methods
+
+##### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Sets the `title` attribute for the about page.
+
+
+## Logging Configuration
+
+The `logger` is an instance of the Python `logging` module configured for the current module (`__name__`).
+
+##### Usage
+
+We can use the `logger` to record log messages throughout our application. For example:
 
 ```python
-from django.urls import path
-from .views import (
-    HomePageView,
-    PostListView,
-    PostCreateView,
-    PostDetailView,
-    PostUpdateView,
-    PostDeleteView,
-    AboutView,
-)
-
-urlpatterns = [
-    path('', HomePageView.as_view(), name='home'),
-    path('about/', AboutView.as_view(), name='about'),
-    path('posts/', PostListView.as_view(), name='post-list'),
-    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
-    path('posts/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
-    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
-    path('posts/new/', PostCreateView.as_view(), name='post-new'),
-]
+# Example usage
+try:
+    # Some code that might raise an exception
+    result = perform_complex_operation()
+except Exception as e:
+    # Log the exception
+    logger.error(f"An error occurred: {e}")
+    # Additional handling or re-raising the exception as needed
 ```
 
-# Django User Accounts App (*with codes*)
+## URL Patterns
+
+The `urlpatterns` list contains the URL patterns for Django blog app. Each pattern is associated with a specific view.
+
+### Views and URLs
+
+1. **Home Page:**
+    - View: `HomePageView`
+    - URL: `/`
+    - Name: `home`
+
+2. **About Page:**
+    - View: `AboutView`
+    - URL: `/about/`
+    - Name: `about`
+
+3. **List of Posts:**
+    - View: `PostListView`
+    - URL: `/posts/`
+    - Name: `post-list`
+
+4. **Post Detail:**
+    - View: `PostDetailView`
+    - URL: `/posts/<int:pk>/`
+    - Name: `post-detail`
+
+5. **Update Post:**
+    - View: `PostUpdateView`
+    - URL: `/posts/<int:pk>/update/`
+    - Name: `post-update`
+
+6. **Delete Post:**
+    - View: `PostDeleteView`
+    - URL: `/posts/<int:pk>/delete/`
+    - Name: `post-delete`
+
+7. **Create New Post:**
+    - View: `PostCreateView`
+    - URL: `/posts/new/`
+    - Name: `post-new`
+
+### Usage
+
+To navigate between different pages, use the provided URLs and view names in Django templates or in application's code.
+
+```python
+# Example URL mapping in a Django template
+<a href="{% url 'home' %}">Home</a>
+```
+
+
+# Django User Accounts App
 
 ## Overview
 
@@ -457,82 +447,47 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from PIL import Image
 ```
+## Profile Model
 
-### Profile Model
-The `Profile` model extends the Django `User` model, adding fields for date of birth and profile picture.
+The `Profile` model extends the built-in `User` model in Django to include additional user information.
 
-```python
-# models.py
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(null=True, blank=True, verbose_name = 'Date of birth') # verbose name is for display in admin interface and other forms
-    profile_pic = models.ImageField(default='default_pic.png', upload_to='profile_pics')
-    
-    def __str__(self) -> str:
-        return f'{self.user}'
-    
-    def get_absolute_url(self):
-        """
-        Define the absolute URL for a Profile object.
+#### Fields
 
-        This method is used by Django's generic views and other parts of the framework
-        to determine the URL for a specific Profile object. By using the reverse()
-        function, it generates the URL based on the 'profiles:profile-detail' URL pattern
-        and includes the primary key (pk) of the object.
+- `user`: One-to-One relationship with the `User` model, linking the profile to a specific user.
+- `date_of_birth`: Date field representing the user's date of birth (nullable and optional).
+- `profile_pic`: Image field for the user's profile picture, with a default image and uploaded to the 'profile_pics' directory.
 
-        Returns:
-            str: The absolute URL for the Profile object.
-        """
-        return reverse('profiles:profile-detail', args=[str(self.pk)])
-    
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        try:
-            img = Image.open(self.profile_pic.path)
+#### Methods
 
-            # Set a maximum size for the profile picture
-            max_size = (300, 300)
-            if img.height > max_size[1] or img.width > max_size[0]:
-                img.thumbnail(max_size)
-                img.save(self.profile_pic.path)
-        except Exception as e:
-            print("Error occured while resizing image!", e)
-```
-### Forms
-The app includes three forms for user registration, user updates, and profile updates.
+#### `__str__()`
 
-```python
-# forms.py
-#imports
-from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from .models import Profile
+- Returns a string representation of the profile, using the associated user's username.
 
-class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField()
-    
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+#### `get_absolute_url()`
 
-class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField()
+- Defines the absolute URL for a `Profile` object.
+- Used by Django's generic views and other parts of the framework to determine the URL for a specific profile object.
+- Generates the URL based on the 'profiles:profile-detail' URL pattern and includes the primary key (pk) of the object.
 
-    class Meta:
-        model = User
-        fields = ['username', 'email']
+#### `save()`
+
+- Overrides the `save` method to resize the profile picture to a maximum size (300x300) before saving the profile.
+
+## User Registration Form (UserRegisterForm)
+
+The `UserRegisterForm` is a Django form for user registration, extending `UserCreationForm` and adding an email field.
+
+#### Fields
+
+- `username`: Required field for the username.
+- `email`: Required email field.
+- `password1` and `password2`: Required fields for password entry and confirmation.
 
 
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['date_of_birth', 'profile_pic']
-```
-
-### Views
+## Views
 The app contains several views, including user registration, user profile display, user profile updates, and custom login view.
 
+### Imports
 ```python
 # views.py
 from typing import Any
@@ -556,127 +511,176 @@ from django.contrib.auth.views import (
     LoginView,
     LogoutView
     )
-
-
-class UserRegistrationView(CreateView):
-    form_class = UserRegisterForm
-    template_name = 'user_accounts/register.html'
-    context_object_name = 'form'
-    success_url = '/login/'
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Register'
-        return context
-    
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        profile = Profile(user=self.object) 
-        profile.save()
-        messages.success(self.request, 'Your account was successfully created! Please log in.')
-        return response
-    
-    # Authentication Checks:
-    # Depending on app's logic, might want to prevent already
-    # authenticated users from accessing the registration page.
-    # dispatch: When a request is made to a Django view, the dispatch() method 
-    # is called to handle the incoming request.
-    def dispatch(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect('/')
-        return super().dispatch(*args, **kwargs)
-
-
-class UserProfileView(LoginRequiredMixin, DetailView):
-    model = Profile
-    template_name = 'user_accounts/user_profile.html'
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        profile = self.get_object()
-        context['title'] = f'Profile-{profile.user}'
-        return context
-    
-    # Ensure that the user can only view their own profile
-    def get_object(self, queryset=None):
-        return self.request.user.profile
-    
-class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
-    model = Profile
-    form_class = UserUpdateForm
-    template_name = 'user_accounts/user_profile_update.html'
-    
-    def get_success_url(self):
-        return reverse('profile-detail', kwargs={'pk': self.object.pk})
-    
-    # Ensure that the user can only view their own profile
-    def get_object(self, queryset=None):
-        return self.request.user
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        profile = self.request.user.profile #get the user profile
-        context['profile_form'] = ProfileUpdateForm(instance = profile)
-        context['title'] = f"Update-{self.request.user}'s Profile"
-        return context
-    
-    def post(self, request, *args, **kwargs):
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            messages.success(request, 'Profile Updated Successfully!')
-            return self.form_valid(user_form)
-        else:
-            messages.error(request, 'Profile update failed. Please check the form.')
-            return self.render_to_response(self.get_context_data(user_form=user_form, profile_form=profile_form))
-        
-        
-class MyLoginView(LoginView):
-    redirect_authenticated_user = True
-    template_name = 'user_accounts/login.html'
-    
-    def get_success_url(self):
-        return reverse_lazy('home') # set dynamic success url. Higher precedence than success_url
-    
-    def form_invalid(self, form):
-        messages.error(self.request,'Invalid username or password')
-        return self.render_to_response(self.get_context_data(form=form))
 ```
 
-### URLs
-The app defines URLs for user profiles, profile updates, user registration, login, logout, and password reset.
+### User Registration View (UserRegistrationView)
+
+The `UserRegistrationView` is a Django class-based view extending `CreateView` for user registration.
+
+#### Attributes
+
+- `form_class`: Specifies the form used for user registration (`UserRegisterForm`).
+- `template_name`: Defines the template used for rendering the view ('user_accounts/register.html').
+- `context_object_name`: Sets the variable name for the form in the template ('form').
+- `success_url`: URL to redirect to upon successful user registration ('/login/').
+
+#### Methods
+
+#### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Sets the `title` attribute for the registration page.
+
+#### `form_valid()`
+
+- Overrides the `form_valid` method to perform additional actions after the form is successfully validated.
+- Creates a corresponding `Profile` instance for the registered user.
+- Displays a success message and redirects the user to the login page.
+
+#### `dispatch()`
+
+- Overrides the `dispatch` method to prevent already authenticated users from accessing the registration page.
+- Redirects authenticated users to the home page.
+
+
+### User Profile View (UserProfileView)
+
+The `UserProfileView` is a Django class-based view extending `DetailView` to display user profile information.
+
+#### Attributes
+
+- `model`: Specifies the model used for the view (`Profile` model).
+- `template_name`: Defines the template used for rendering the view ('user_accounts/user_profile.html').
+
+#### Methods
+
+#### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Sets the `title` attribute based on the associated user's username.
+
+#### `get_object()`
+
+- Overrides the `get_object` method to ensure that the user can only view their own profile.
+- Retrieves the profile associated with the currently logged-in user.
+
+
+### User Profile Update View (UserProfileUpdateView)
+
+The `UserProfileUpdateView` is a Django class-based view extending `UpdateView` to handle the updating of user profile information.
+
+#### Attributes
+
+- `model`: Specifies the model used for the view (`Profile` model).
+- `form_class`: Specifies the form used for updating user information (`UserUpdateForm`).
+- `template_name`: Defines the template used for rendering the view ('user_accounts/user_profile_update.html').
+
+#### Methods
+
+#### `get_success_url()`
+
+- Overrides the `get_success_url` method to determine the URL to redirect to upon successful profile update.
+- Redirects to the user's profile detail page.
+
+#### `get_object()`
+
+- Overrides the `get_object` method to ensure that the user can only update their own profile.
+- Retrieves the profile associated with the currently logged-in user.
+
+#### `get_context_data()`
+
+- Overrides the `get_context_data` method to provide additional context data for rendering the template.
+- Retrieves the user's profile and includes the `ProfileUpdateForm` instance in the context.
+- Sets the `title` attribute for updating the user's profile.
+
+#### `post()`
+
+- Overrides the `post` method to handle form submission for updating user information.
+- Validates both the `UserUpdateForm` and `ProfileUpdateForm`.
+- Displays success or error messages accordingly.
+
+### Custom Login View (MyLoginView)
+
+The `MyLoginView` is a Django class-based view extending `LoginView` to customize the behavior of the login process.
+
+#### Attributes
+
+- `redirect_authenticated_user`: If set to `True`, redirects authenticated users to the home page upon attempting to access the login page.
+- `template_name`: Defines the template used for rendering the view ('user_accounts/login.html').
+
+#### Methods
+
+#### `get_success_url()`
+
+- Overrides the `get_success_url` method to determine the URL to redirect to upon successful login.
+- Redirects authenticated users to the home page.
+
+#### `form_invalid()`
+
+- Overrides the `form_invalid` method to handle the case where the login form is invalid.
+- Displays an error message for invalid username or password.
+
+
+
+## User Accounts URLs
+
+The `urlpatterns` list contains the URL patterns for user accounts functionality in your Django project.
+
+### User Profile URLs
+
+1. **Profile Detail:**
+    - View: `UserProfileView`
+    - URL: `/profile/<int:pk>/`
+    - Name: `profile-detail`
+
+2. **Update User Profile:**
+    - View: `UserProfileUpdateView`
+    - URL: `/profile/<int:pk>/update/`
+    - Name: `user_profile_update`
+
+### User Authentication URLs
+
+3. **User Registration:**
+    - View: `UserRegistrationView`
+    - URL: `/register/`
+    - Name: `register`
+
+4. **User Login:**
+    - View: `MyLoginView`
+    - URL: `/login/`
+    - Name: `login`
+
+5. **User Logout:**
+    - View: `auth_views.LogoutView`
+    - URL: `/logout/`
+    - Name: `logout`
+
+### Password Reset URLs
+
+6. **Password Reset:**
+    - View: `auth_views.PasswordResetView`
+    - URL: `/password-reset/`
+    - Name: `password_reset`
+
+7. **Password Reset Done:**
+    - View: `auth_views.PasswordResetDoneView`
+    - URL: `/password-reset/done/`
+    - Name: `password_reset_done`
+
+8. **Password Reset Confirm:**
+    - View: `auth_views.PasswordResetConfirmView`
+    - URL: `/password-reset-confirm/<uidb64>/<token>/`
+    - Name: `password_reset_confirm`
+
+9. **Password Reset Complete:**
+    - View: `auth_views.PasswordResetCompleteView`
+    - URL: `/password-reset-complete/`
+    - Name: `password_reset_complete`
+
+### Usage
+
+To navigate between different pages or include these URLs in templates, use the provided URL patterns and names.
 
 ```python
-# urls.py
-# urls for user_accounts_app
-from django.urls import path
-from user_accounts import views as user_accounts_views
-from django.contrib.auth import views as auth_views
-from .views import UserProfileView, UserProfileUpdateView, MyLoginView
-
-urlpatterns = [
-    path('profile/<int:pk>/', UserProfileView.as_view(), name = 'profile-detail'),
-    path('profile/<int:pk>/update/', UserProfileUpdateView.as_view(), name = 'user_profile_update'),
-    
-    path('register/', user_accounts_views.UserRegistrationView.as_view(), name='register'),
-    path('login/', MyLoginView.as_view(), name = 'login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name="user_accounts/logout.html"), name = 'logout'),
-    
-     # urls for password reset
-    path('password-reset/', 
-         auth_views.PasswordResetView.as_view(template_name='user_accounts/password_reset.html'),
-         name='password_reset'),
-    path('password-reset/done/',
-         auth_views.PasswordResetDoneView.as_view(template_name='user_accounts/password_reset_done.html'),
-         name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', 
-         auth_views.PasswordResetConfirmView.as_view(template_name='user_accounts/password_reset_confirm.html'),
-         name='password_reset_confirm'),
-    path('password-reset-complete/', 
-         auth_views.PasswordResetCompleteView.as_view(template_name='user_accounts/password_reset_complete.html'),
-         name='password_reset_complete'),
-]
-```
+# Example URL mapping in a Django template
+<a href="{% url 'profile-detail' pk=user.id %}">View Profile</a>
