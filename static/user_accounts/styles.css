@@ -1,0 +1,25 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.form.container {
+    max-width: 800px;
+    font-family: Georgia, Times, 'Times New Roman', serif;
+    background: #f0f0f0;
+}
+
+
+.form form ul li {
+    list-style: none;
+}
+
+.form h3 {
+    font-family: Arial, Helvetica, sans-serif;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 12px;
+    color: #fff;
+    background-color: #000;
+}

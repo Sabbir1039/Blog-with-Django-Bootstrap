@@ -25,7 +25,7 @@ class UserRegistrationView(CreateView):
     form_class = UserRegisterForm
     template_name = 'user_accounts/register.html'
     context_object_name = 'form'
-    success_url = '/login/'
+    success_url = '/accounts/login/'
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)

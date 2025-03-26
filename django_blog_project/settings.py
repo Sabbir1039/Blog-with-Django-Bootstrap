@@ -25,9 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s8c-&ir5+f=l9pmef0+^_r=elnl9bw7&&^b9vg(3**nniua+ps'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'Sabbir.pythonanywhere.com',
+]
 
 
 # Application definition
@@ -131,7 +133,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Directory where collectstatic will gather static files for deployment
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Directories where Django looks for static files in addition to the static directory of each app
 # STATICFILES_DIRS = [
